@@ -1,37 +1,74 @@
 {% extends "quiz/base.html" %}
 
-{% block title %}{{ exam.title }}{% endblock %}
+{% block title %}{{ exam.title }} | Quiz Studio{% endblock %}
 
 {% block content %}
-<h1>{{ exam.title }}</h1>
+<nav class="breadcrumb" aria-label="Migas de pan">
+    <a href="{% url 'quiz:exam_list' %}">Exámenes</a>
+    <span aria-hidden="true">/</span>
+    <span>{{ exam.title }}</span>
+</nav>
 
-<p>{{ exam.description }}</p>
+<section class="detail-hero">
+    <div>
+        <span class="eyebrow eyebrow-light">Evaluación activa</span>
+        <h1>{{ exam.title }}</h1>
+        <p>{{ exam.description }}</p>
+        <div class="detail-meta">
+            <span><strong>{{ exam.questions.count }}</strong> pregunta{{ exam.questions.count|pluralize:"s" }}</span>
+            <span>Contenido académico</span>
+        </div>
+    </div>
+    <a class="button button-light" href="{% url 'quiz:question_create' exam.pk %}">
+        <span aria-hidden="true">＋</span> Agregar pregunta
+    </a>
+</section>
 
-<a href="{% url 'quiz:question_create' exam.pk %}">
-    Agregar pregunta
-</a>
-
-<hr>
-
-{% for question in exam.questions.all %}
-    <h2>{{ question.text }}</h2>
-
-    <ul>
-        {% for choice in question.choices.all %}
-            <li>
-                {{ choice.text }}
-
-                {% if choice.is_correct %}
-                    - Correcta
-                {% endif %}
-            </li>
+<section class="questions-section" aria-labelledby="questions-title">
+    <div class="section-heading">
+        <div>
+            <span class="section-kicker">Contenido</span>
+            <h2 id="questions-title">Preguntas del examen</h2>
+        </div>
+    </div>
+    <div class="question-stack">
+        {% for question in exam.questions.all %}
+            <article class="question-card">
+                <div class="question-header">
+                    <span class="question-number">{{ forloop.counter|stringformat:"02d" }}</span>
+                    <div>
+                        <span class="card-label">Pregunta {{ forloop.counter }}</span>
+                        <h3>{{ question.text }}</h3>
+                    </div>
+                </div>
+                <ol class="choice-list">
+                    {% for choice in question.choices.all %}
+                        <li{% if choice.is_correct %} class="choice-correct"{% endif %}>
+                            <span class="choice-marker">{{ forloop.counter }}</span>
+                            <span class="choice-text">{{ choice.text }}</span>
+                            {% if choice.is_correct %}
+                                <span class="correct-badge"><span aria-hidden="true">✓</span> Correcta</span>
+                            {% endif %}
+                        </li>
+                    {% endfor %}
+                </ol>
+            </article>
+        {% empty %}
+            <div class="empty-state empty-state-bordered">
+                <span class="empty-icon" aria-hidden="true">?</span>
+                <h3>Este examen todavía no tiene preguntas</h3>
+                <p>Agrega la primera pregunta para comenzar a construir la evaluación.</p>
+                <a class="button button-primary" href="{% url 'quiz:question_create' exam.pk %}">
+                    Agregar primera pregunta
+                </a>
+            </div>
         {% endfor %}
-    </ul>
-{% empty %}
-    <p>Este examen todavía no tiene preguntas.</p>
-{% endfor %}
+    </div>
+</section>
 
-<a href="{% url 'quiz:exam_list' %}">
-    Volver al listado
-</a>
+<div class="page-actions">
+    <a class="text-link" href="{% url 'quiz:exam_list' %}">
+        <span aria-hidden="true">←</span> Volver al listado
+    </a>
+</div>
 {% endblock %}

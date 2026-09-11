@@ -1,35 +1,117 @@
 {% extends "quiz/base.html" %}
 
-{% block title %}Nueva pregunta{% endblock %}
+{% block title %}Nueva pregunta | Quiz Studio{% endblock %}
 
 {% block content %}
-<h1>Nueva pregunta</h1>
+<nav class="breadcrumb" aria-label="Migas de pan">
+    <a href="{% url 'quiz:exam_list' %}">Exámenes</a>
+    <span aria-hidden="true">/</span>
+    <a href="{% url 'quiz:exam_detail' exam.pk %}">{{ exam.title }}</a>
+    <span aria-hidden="true">/</span>
+    <span>Nueva pregunta</span>
+</nav>
 
-<h2>{{ exam.title }}</h2>
+<section class="form-intro">
+    <span class="eyebrow">Editor de contenido</span>
+    <h1>Crear una nueva pregunta</h1>
+    <p>Añade el enunciado y cuatro alternativas para <strong>{{ exam.title }}</strong>.</p>
+</section>
 
-<form method="post">
-    {% csrf_token %}
+<div class="form-layout">
+    <form class="question-form" method="post">
+        {% csrf_token %}
+        {% if question_form.non_field_errors %}
+            <div class="form-alert" role="alert">{{ question_form.non_field_errors }}</div>
+        {% endif %}
 
-    {{ question_form.as_p }}
+        <section class="form-card">
+            <div class="form-card-heading">
+                <span class="step-number">1</span>
+                <div>
+                    <h2>Escribe el enunciado</h2>
+                    <p>Formula una pregunta breve y fácil de comprender.</p>
+                </div>
+            </div>
+            {% for hidden in question_form.hidden_fields %}{{ hidden }}{% endfor %}
+            <div class="field-group{% if question_form.text.errors %} field-error{% endif %}">
+                <label for="{{ question_form.text.id_for_label }}">Pregunta</label>
+                {{ question_form.text }}
+                {% if question_form.text.errors %}
+                    <div class="error-message">{{ question_form.text.errors }}</div>
+                {% endif %}
+            </div>
+        </section>
 
-    {{ formset.management_form }}
+        {{ formset.management_form }}
 
-    {% if formset.non_form_errors %}
-        {{ formset.non_form_errors }}
-    {% endif %}
+        <section class="form-card">
+            <div class="form-card-heading">
+                <span class="step-number">2</span>
+                <div>
+                    <h2>Configura las alternativas</h2>
+                    <p>Completa las opciones y marca exactamente una como correcta.</p>
+                </div>
+            </div>
+            {% if formset.non_form_errors %}
+                <div class="form-alert" role="alert">
+                    <strong>Revisa las alternativas:</strong>
+                    {{ formset.non_form_errors }}
+                </div>
+            {% endif %}
+            <div class="choice-fields">
+                {% for form in formset %}
+                    <div class="choice-field{% if form.errors %} choice-field-error{% endif %}">
+                        {% for hidden in form.hidden_fields %}
+                            {{ hidden }}
+                            {% if hidden.errors %}<div class="error-message field-span">{{ hidden.errors }}</div>{% endif %}
+                        {% endfor %}
+                        {% if form.non_field_errors %}
+                            <div class="error-message field-span">{{ form.non_field_errors }}</div>
+                        {% endif %}
+                        <span class="choice-field-number">{{ forloop.counter }}</span>
+                        <div class="choice-input-wrap">
+                            <label for="{{ form.text.id_for_label }}">Alternativa {{ forloop.counter }}</label>
+                            {{ form.text }}
+                            {% if form.text.errors %}
+                                <div class="error-message">{{ form.text.errors }}</div>
+                            {% endif %}
+                        </div>
+                        <div class="choice-controls">
+                            <label class="correct-control" for="{{ form.is_correct.id_for_label }}">
+                                {{ form.is_correct }} <span>Correcta</span>
+                            </label>
+                            <label class="delete-control" for="{{ form.DELETE.id_for_label }}">
+                                {{ form.DELETE }} <span>Eliminar</span>
+                            </label>
+                        </div>
+                        {% if form.is_correct.errors %}
+                            <div class="error-message field-span">{{ form.is_correct.errors }}</div>
+                        {% endif %}
+                        {% if form.DELETE.errors %}
+                            <div class="error-message field-span">{{ form.DELETE.errors }}</div>
+                        {% endif %}
+                    </div>
+                {% endfor %}
+            </div>
+        </section>
 
-    {% for form in formset %}
-        <div>
-            {{ form.as_p }}
+        <div class="form-actions">
+            <a class="button button-secondary" href="{% url 'quiz:exam_detail' exam.pk %}">Cancelar</a>
+            <button class="button button-primary" type="submit">
+                Guardar pregunta <span aria-hidden="true">→</span>
+            </button>
         </div>
-    {% endfor %}
-
-    <button type="submit">
-        Guardar pregunta
-    </button>
-</form>
-
-<a href="{% url 'quiz:exam_detail' exam.pk %}">
-    Cancelar
-</a>
+    </form>
+    <aside class="form-aside">
+        <div class="tip-card">
+            <span class="tip-icon" aria-hidden="true">✦</span>
+            <h2>Consejos para una buena pregunta</h2>
+            <ul>
+                <li>Utiliza un enunciado claro y directo.</li>
+                <li>Evita alternativas ambiguas.</li>
+                <li>Marca solamente una respuesta correcta.</li>
+            </ul>
+        </div>
+    </aside>
+</div>
 {% endblock %}

@@ -1,21 +1,55 @@
 {% extends "quiz/base.html" %}
 
-{% block title %}Exámenes{% endblock %}
+{% block title %}Exámenes | Quiz Studio{% endblock %}
 
 {% block content %}
-<h1>Lista de exámenes</h1>
-
-{% for exam in exams %}
-    <div>
-        <h2>
-            <a href="{% url 'quiz:exam_detail' exam.pk %}">
-                {{ exam.title }}
-            </a>
-        </h2>
-
-        <p>{{ exam.description }}</p>
+<section class="hero">
+    <div class="hero-copy">
+        <span class="eyebrow">Laboratorio Django</span>
+        <h1>Centro de evaluaciones</h1>
+        <p>
+            Explora los exámenes disponibles, revisa sus preguntas y continúa
+            fortaleciendo tus conocimientos.
+        </p>
     </div>
-{% empty %}
-    <p>No hay exámenes registrados.</p>
-{% endfor %}
+    <div class="hero-visual" aria-hidden="true">
+        <div class="visual-orbit orbit-one"></div>
+        <div class="visual-orbit orbit-two"></div>
+        <span class="visual-symbol">✓</span>
+    </div>
+</section>
+
+<section class="content-section" aria-labelledby="exam-list-title">
+    <div class="section-heading">
+        <div>
+            <span class="section-kicker">Catálogo</span>
+            <h2 id="exam-list-title">Exámenes disponibles</h2>
+        </div>
+        <span class="count-badge">{{ exams|length }} disponible{{ exams|length|pluralize:"s" }}</span>
+    </div>
+    <div class="exam-grid">
+        {% for exam in exams %}
+            <article class="exam-card">
+                <div class="exam-card-top">
+                    <span class="exam-icon" aria-hidden="true">{{ forloop.counter|stringformat:"02d" }}</span>
+                    <span class="status-badge"><i></i> Disponible</span>
+                </div>
+                <div class="exam-card-body">
+                    <span class="card-label">Evaluación</span>
+                    <h3><a href="{% url 'quiz:exam_detail' exam.pk %}">{{ exam.title }}</a></h3>
+                    <p>{{ exam.description|default:"Evaluación disponible para revisión." }}</p>
+                </div>
+                <a class="card-action" href="{% url 'quiz:exam_detail' exam.pk %}">
+                    Ver examen <span aria-hidden="true">→</span>
+                </a>
+            </article>
+        {% empty %}
+            <div class="empty-state">
+                <span class="empty-icon" aria-hidden="true">⌁</span>
+                <h3>Aún no hay exámenes</h3>
+                <p>Los exámenes registrados aparecerán aquí.</p>
+            </div>
+        {% endfor %}
+    </div>
+</section>
 {% endblock %}

@@ -1,14 +1,39 @@
+{% load static %}
 <!DOCTYPE html>
 <html lang="es">
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>{% block title %}Quiz{% endblock %}</title>
+    <meta name="description" content="Plataforma de evaluaciones desarrollada con Django.">
+    <title>{% block title %}Quiz Studio{% endblock %}</title>
+    <link rel="stylesheet" href="{% static 'quiz/styles.css' %}">
 </head>
 <body>
-    <main>
-        {% block content %}
-        {% endblock %}
+    <header class="site-header">
+        <div class="container header-inner">
+            <a class="brand" href="{% url 'quiz:exam_list' %}" aria-label="Ir al inicio">
+                <span class="brand-mark" aria-hidden="true">Q</span>
+                <span>
+                    <strong>Quiz Studio</strong>
+                    <small>Evaluaciones Django</small>
+                </span>
+            </a>
+            <nav class="main-nav" aria-label="Navegación principal">
+                <a href="{% url 'quiz:exam_list' %}">Exámenes</a>
+                <a class="admin-link" href="{% url 'admin:index' %}">Administración</a>
+            </nav>
+        </div>
+    </header>
+    <main class="page-content">
+        <div class="container">
+            {% block content %}{% endblock %}
+        </div>
     </main>
+    <footer class="site-footer">
+        <div class="container footer-inner">
+            <p>Proyecto académico desarrollado con Django.</p>
+            <span>Quiz Studio</span>
+        </div>
+    </footer>
 </body>
 </html>

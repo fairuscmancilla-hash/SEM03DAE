@@ -1,0 +1,25 @@
+{% extends "admin/base.html" %}
+{% load i18n static %}
+
+{% block title %}{{ title }} | Quiz Studio{% endblock %}
+
+{% block extrastyle %}
+    {{ block.super }}
+    <link rel="stylesheet" href="{% static 'quiz/admin.css' %}">
+{% endblock %}
+
+{% block branding %}
+    <div id="site-name">
+        <a href="{% url 'admin:index' %}">
+            <span class="admin-brand-mark">Q</span>
+            <span class="admin-brand-copy">
+                <strong>Quiz Studio</strong>
+                <small>Content administration</small>
+            </span>
+        </a>
+    </div>
+{% endblock %}
+
+{% block nav-global %}
+    <a class="public-site-link" href="{% url 'quiz:exam_list' %}">View public site</a>
+{% endblock %}

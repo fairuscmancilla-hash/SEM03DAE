@@ -14,6 +14,11 @@ class QuestionForm(forms.ModelForm):
     class Meta:
         model = Question
         fields = ["text"]
+        widgets = {
+            "text": forms.Textarea(
+                attrs={"placeholder": "Escribe el enunciado de la pregunta"}
+            ),
+        }
 
 
 class BaseChoiceFormSet(BaseInlineFormSet):
@@ -37,7 +42,7 @@ class BaseChoiceFormSet(BaseInlineFormSet):
 
         if correct_choices != 1:
             raise forms.ValidationError(
-                "Exactly one choice must be marked as correct."
+                "Debes marcar exactamente una alternativa como correcta."
             )
 
 
@@ -45,6 +50,14 @@ ChoiceFormSet = inlineformset_factory(
     Question,
     Choice,
     fields=["text", "is_correct"],
+    widgets={
+        "text": forms.TextInput(
+            attrs={"placeholder": "Escribe una alternativa"}
+        ),
+        "is_correct": forms.CheckboxInput(
+            attrs={"aria-label": "Marcar como respuesta correcta"}
+        ),
+    },
     formset=BaseChoiceFormSet,
     extra=4,
     can_delete=True,
