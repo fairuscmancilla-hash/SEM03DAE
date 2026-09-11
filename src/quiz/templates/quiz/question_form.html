@@ -1,0 +1,35 @@
+{% extends "quiz/base.html" %}
+
+{% block title %}Nueva pregunta{% endblock %}
+
+{% block content %}
+<h1>Nueva pregunta</h1>
+
+<h2>{{ exam.title }}</h2>
+
+<form method="post">
+    {% csrf_token %}
+
+    {{ question_form.as_p }}
+
+    {{ formset.management_form }}
+
+    {% if formset.non_form_errors %}
+        {{ formset.non_form_errors }}
+    {% endif %}
+
+    {% for form in formset %}
+        <div>
+            {{ form.as_p }}
+        </div>
+    {% endfor %}
+
+    <button type="submit">
+        Guardar pregunta
+    </button>
+</form>
+
+<a href="{% url 'quiz:exam_detail' exam.pk %}">
+    Cancelar
+</a>
+{% endblock %}
